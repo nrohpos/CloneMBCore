@@ -7,12 +7,10 @@
 
 import Foundation
 
-enum Env: String {
+public enum Env: String {
     case sit = "Development"
     case uat = "Stating"
     case prod = "Production"
-    
-    
     
     var baseUrl: String {
         switch self {
@@ -25,11 +23,16 @@ enum Env: String {
 }
 
 
-class EnvConfig {
-    static let shared = EnvConfig()
+public class EnvConfig {
+    public static let shared = EnvConfig()
     var env: Env = .sit
+    var apiKey: String = ""
     
     public func setEnv(_ env: Env)  {
         self.env = env
+    }
+     
+    public func setApiKey(_ key: String)  {
+        self.apiKey = key
     }
 }

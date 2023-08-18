@@ -10,20 +10,20 @@ import Moya
 
 extension EndPoint: TargetType {
     
-    var baseURL: URL {
+   public var baseURL: URL {
         URL(string: EnvConfig.shared.env.baseUrl)!
     }
     
-    var path: String {
+    public var path: String {
         switch self {
         case .trending:
-            return ""
+            return "trending/all/week"
         default:
             return ""
         }
     }
     
-    var method: Moya.Method {
+    public var method: Moya.Method {
         switch self {
         case .trending:
             return .get
@@ -32,16 +32,16 @@ extension EndPoint: TargetType {
         }
     }
     
-    var task: Moya.Task {
+    public var task: Moya.Task {
         switch self {
         case .trending:
-            return .requestPlain
+            return .requestParameters(parameters: ["api_key": EnvConfig.shared.apiKey], encoding: URLEncoding.queryString)
         default:
             return .requestPlain
         }
     }
     
-    var headers: [String : String]? {
+    public var headers: [String : String]? {
         switch self {
             case .trending:
                 return ["Content-type": "application/json"]

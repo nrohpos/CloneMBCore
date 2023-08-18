@@ -7,27 +7,33 @@
 
 import Foundation
 import Moya
+import RxSwift
 public class AppService {
-  public static let shared = AppService()
+    public static let shared = AppService()
+    private let disposeBag = DisposeBag()
     
-    public func dataFetch() {
-       let provider = MoyaProvider<EndPoint>()
-        provider.request(.trending) { result in
-            switch result {
-            case let .success(moyaResponse):
-                let data = moyaResponse.data
-                let statusCode = moyaResponse.statusCode
-                // do something with the response data or statusCode
-                
-                let json = try? JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String:AnyObject]
-                          print(json)
-            case let .failure(error):
-                print(error.localizedDescription)
-                // this means there was a network failure - either the request
-                // wasn't sent (connectivity), or no response was received (server
-                // timed out).  If the server responds with a 4xx or 5xx error, that
-                // will be sent as a ".success"-ful response.
-            }
+    public func fetchData(endPoint: EndPoint) -> Observable<MovieResponse>  {
+        Observable.create { obs in
+            let provider = MoyaProvider<EndPoint>()
+             provider.request(endPoint) { result in
+                 switch result {
+                 case let .success(moyaResponse):
+                     let data = moyaResponse.data
+                     let statusCode = moyaResponse.statusCode
+                     // do something with the response data or statusCode
+
+                     if let result = try? JSONDecoder().decode(MovieResponse.self, from: data) {
+                         obs.onNext(result)
+                     }else {
+                         obs.onError(MoyaError.requestMapping("Something went wrong"))
+                     }
+                 case let .failure(error):
+                     print(error.localizedDescription)
+                     obs.onError(error)
+                 }
+             }
+            return Disposables.create()
         }
+       
     }
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum EndPoint {
+public enum EndPoint {
     case trending
     case none
 }
